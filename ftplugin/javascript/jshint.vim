@@ -18,18 +18,21 @@ let s:install_dir = expand('<sfile>:p:h')
 au BufLeave <buffer> call s:JSHintClear()
 
 " Find out when JSHint should update
-
 if !exists("g:JSHintUpdateWriteOnly")
   let g:JSHintUpdateWriteOnly = 0
 endif
 
-if g:JSHintUpdateWriteOnly == 0
+if !exists("g:JSHintUpdateReadAndWriteOnly")
+  let g:JSHintUpdateReadAndWriteOnly = 0
+endif
+
+if g:JSHintUpdateReadAndWriteOnly == 1
+  au BufEnter <buffer> call s:JSHint()
+  au BufWrite <buffer> call s:JSHint()
+elseif g:JSHintUpdateWriteOnly == 0
   au BufEnter <buffer> call s:JSHint()
   au InsertLeave <buffer> call s:JSHint()
 endif
-
-"au InsertEnter <buffer> call s:JSHint()
-au BufWritePost <buffer> call s:JSHint()
 
 " due to http://tech.groups.yahoo.com/group/vimdev/message/52115
 if(!has("win32") || v:version>702)
@@ -276,5 +279,3 @@ if !exists("*s:ActivateJSHintQuickFixWindow")
         endif
     endfunction
 endif
-
-
